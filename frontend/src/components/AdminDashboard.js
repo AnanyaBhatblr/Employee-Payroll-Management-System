@@ -533,38 +533,52 @@ const [loadingEvaluation, setLoadingEvaluation] = useState(false);
         <div className="dashboard-header">
           <h1 className="dashboard-title">Admin Dashboard</h1>
           <p className="dashboard-subtitle">Manage your organization's data</p>
-          <button
-            onClick={() => navigate("/manage-employees")} // Use navigate instead of history
-            style={{
-              backgroundColor: '#60a5fa',
-              color: '#fff',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '0.5rem',
-              border: 'none',
-              cursor: 'pointer',
-              fontWeight: '600',
-              marginTop: '1rem',
-              transition: 'background-color 0.2s',
-            }}
-          >
-            Manage Employees
-          </button>
-          <button
-            onClick={handleLogout}
-            style={{
-              backgroundColor: '#f87171',
-              color: '#fff',
-              padding: '1rem',
-              borderRadius: '0.5rem',
-              border: 'none',
-              cursor: 'pointer',
-              width: '200px',
-              marginTop: '1rem',
-              marginLeft: '1rem'
-            }}
-          >
-            Logout
-          </button>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '1rem' }}>
+            <button
+              onClick={() => window.location.href = "https://indian-tax-regime-calc.streamlit.app/"}
+              style={{
+                backgroundColor: '#4caf50',
+                color: '#fff',
+                padding: '1rem',
+                borderRadius: '0.5rem',
+                border: 'none',
+                cursor: 'pointer',
+                width: '200px'
+              }}
+            >
+              Tax-Calc
+            </button>
+            <button
+              onClick={() => navigate("/manage-employees")} // Use navigate instead of history
+              style={{
+                backgroundColor: '#60a5fa',
+                color: '#fff',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '0.5rem',
+                border: 'none',
+                cursor: 'pointer',
+                fontWeight: '600',
+                transition: 'background-color 0.2s',
+                width: '200px'
+              }}
+            >
+              Manage Employees
+            </button>
+            <button
+              onClick={handleLogout}
+              style={{
+                backgroundColor: '#f87171',
+                color: '#fff',
+                padding: '1rem',
+                borderRadius: '0.5rem',
+                border: 'none',
+                cursor: 'pointer',
+                width: '200px'
+              }}
+            >
+              Logout
+            </button>
+          </div>
         </div>
 
         <div className="dashboard-content" style={{ width: '100%' }}>

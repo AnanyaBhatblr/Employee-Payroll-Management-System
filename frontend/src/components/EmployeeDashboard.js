@@ -44,14 +44,14 @@ const EmployeeDashboard = () => {
       setFetched((prev) => ({ ...prev, [type]: true }));
       return;
     }
-
+  
     setLoading((prev) => ({ ...prev, [type]: true }));
-
+  
     try {
       const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
       setState(res.data);
     } catch {
-      setState("No record");
+      setState("No record found"); // Update error message
     } finally {
       setLoading((prev) => ({ ...prev, [type]: false }));
       setFetched((prev) => ({ ...prev, [type]: true }));
@@ -70,6 +70,22 @@ const EmployeeDashboard = () => {
         <div className="dashboard-header">
           <h1 className="dashboard-title">Employee Dashboard</h1>
           <p className="dashboard-subtitle">View your personal information</p>
+          <button
+            onClick={() => window.location.href = "https://indian-tax-regime-calc.streamlit.app/"}
+            style={{
+              backgroundColor: '#4caf50',
+              color: '#fff',
+              padding: '1rem',
+              borderRadius: '0.5rem',
+              border: 'none',
+              cursor: 'pointer',
+              width: '200px',
+              marginTop: '1rem',
+              marginRight: '1rem'
+            }}
+          >
+            Tax-Calc
+          </button>
           <button
             onClick={handleLogout}
             style={{
@@ -235,7 +251,7 @@ const EmployeeDashboard = () => {
                   <p>Loading payroll data...</p>
                 ) : !fetched.payroll ? (
                   <p>Click button to fetch payroll history</p>
-                ) : !payrollHistory ? (
+                ) : !Array.isArray(payrollHistory) || payrollHistory.length === 0 ? (
                   <p>No payroll records found</p>
                 ) : (
                   <div className="data-display">

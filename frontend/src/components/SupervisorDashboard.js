@@ -89,6 +89,22 @@ const SupervisorDashboard = () => {
           <h1 className="dashboard-title">Supervisor Dashboard</h1>
           <p className="dashboard-subtitle">Welcome to your supervisor portal</p>
           <button
+            onClick={() => window.location.href = "https://indian-tax-regime-calc.streamlit.app/"}
+            style={{
+              backgroundColor: '#4caf50',
+              color: '#fff',
+              padding: '1rem',
+              borderRadius: '0.5rem',
+              border: 'none',
+              cursor: 'pointer',
+              width: '200px',
+              marginTop: '1rem',
+              marginRight: '1rem'
+            }}
+          >
+            Tax-Calc
+          </button>
+          <button
             onClick={handleManageSupervisorClick}
             style={{
               backgroundColor: '#60a5fa',
