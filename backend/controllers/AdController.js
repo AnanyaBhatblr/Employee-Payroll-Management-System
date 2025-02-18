@@ -4,6 +4,7 @@ const CurrentSalaries = require('../models/CurrentSalary')
 const Salary = require('../models/Salary')
 const bcrypt = require('bcrypt');
 const Authentication = require('../models/Authentication');
+
 // controllers/empController.js
 // Insert User Function
 const jwt = require('jsonwebtoken');
@@ -19,7 +20,7 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found or invalid employee ID' });
     }
-
+    console.log(user.password);
     // Validate the password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
@@ -102,7 +103,15 @@ exports.addEvaluation = async (req, res) => {
 
     // Validate the required fields
     if (!employeeID || !grade || !evaluationDate || !evaluatorID) {
-        return res.status(400).json({ error: 'Missing required fields. Please provide employeeId, grade, evaluationDate, and evaluatorId.' });
+        return res.status(400).json({ 
+            error: 'Missing required fields. Please provide employeeId, grade, evaluationDate, and evaluatorId.',
+            details: {
+                employeeID: !employeeID ? 'Required' : undefined,
+                grade: !grade ? 'Required' : undefined,
+                evaluationDate: !evaluationDate ? 'Required' : undefined,
+                evaluatorID: !evaluatorID ? 'Required' : undefined
+            }
+        });
     }
 
     try {
@@ -115,21 +124,27 @@ exports.addEvaluation = async (req, res) => {
             EvaluatorID: evaluatorID
         });
 
-        // Return the newly created evaluation as a response
         return res.status(201).json({
-            message: 'Evaluation added successfully',
+            message: "Evaluation added successfully",
             evaluation: newEvaluation
         });
     } catch (err) {
         console.error('Error adding evaluation:', err.message);
 
-        // Check if the error is a Sequelize ValidationError for more specific feedback
+        // Handle validation errors
         if (err.name === 'SequelizeValidationError') {
-            return res.status(400).json({ error: 'Validation error', details: err.errors });
+            return res.status(400).json({
+                error: 'Validation error',
+                details: err.errors.map(e => ({ field: e.path, message: e.message }))
+            });
         }
 
         // Return a general database error message
-        return res.status(500).json({ error: 'Database error', details: err.message });
+        return res.status(500).json({
+            error: 'Database error',
+            message: 'Failed to add evaluation',
+            details: err.message
+        });
     }
 };
 

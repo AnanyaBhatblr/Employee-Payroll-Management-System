@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const Employee = require('./Employee'); // Import Employee model
 
-const Authentication = sequelize.define('Authentication', {
+const Authentication = sequelize.define('authentications', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -21,9 +21,11 @@ const Authentication = sequelize.define('Authentication', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: Employee,
-      key: 'EmployeeID',
+      model: 'Employee',
+      key: 'EmployeeID'
     },
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE'
   },
 }, {
   tableName: 'authentications',

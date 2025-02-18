@@ -3,7 +3,8 @@ const PerformanceStats = require('../models/PerformanceStats');
 const CurrentSalaries = require('../models/CurrentSalary')
 const Salary = require('../models/Salary')
 const bcrypt = require('bcrypt');
-const Authentication = require('../models/authentication');
+const Authentication = require('../models/Authentication');
+
 // controllers/empController.js
 // Insert User Function
 const jwt = require('jsonwebtoken');
@@ -27,7 +28,7 @@ exports.addEvaluation = async (req, res) => {
         // Check if the employee exists and is supervised by the evaluator
         const employee = await Employee.findOne({
             where: { EmployeeID: employeeID, SupervisorID: employeeId },
-            attributes: ['EmployeeID', 'Name', 'SupervisorID']
+            attributes: ['EmployeeID', 'Name', 'SupervisorID', 'Email']
         });
 
         if (!employee) {
@@ -56,10 +57,17 @@ exports.addEvaluation = async (req, res) => {
 
         // Handle validation errors
         if (err.name === "SequelizeValidationError") {
-            return res.status(400).json({ error: "Validation error", details: err.errors });
+            return res.status(400).json({
+                error: "Validation error",
+                details: err.errors.map(e => ({ field: e.path, message: e.message }))
+            });
         }
 
-        return res.status(500).json({ error: "Database error", details: err.message });
+        return res.status(500).json({
+            error: "Database error",
+            message: "Failed to add evaluation",
+            details: err.message
+        });
     }
 };
 
