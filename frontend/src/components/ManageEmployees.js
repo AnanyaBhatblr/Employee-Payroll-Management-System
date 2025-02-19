@@ -1,8 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./AdminDashboard.css"; // Using the same CSS file for consistency
+import { useNavigate } from "react-router-dom";
 
 const ManageEmployees = () => {
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate('/admins');
+  };
   // Combine all state declarations at the top
   const [formValues, setFormValues] = useState({
     username: "",
@@ -478,6 +484,24 @@ const [evaluationEvaluatorID, setEvaluationEvaluatorID] = useState("");
 
   return (
     <div className="admin-dashboard">
+      <button
+        onClick={handleBack}
+        style={{
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
+          padding: '10px 20px',
+          backgroundColor: '#1e40af',
+          color: 'white',
+          border: 'none',
+          borderRadius: '0.5rem',
+          cursor: 'pointer',
+          fontSize: '1rem',
+          width: 'auto'
+        }}
+      >
+        ← Back
+      </button>
       <div className="dashboard-container" style={{ padding: '2rem' }}>
         <div className="dashboard-header" style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <h1 className="dashboard-title" style={{ color: '#fff', fontSize: '2.5rem', marginBottom: '1rem' }}>
