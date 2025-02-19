@@ -33,6 +33,9 @@ const ManageEmployees = () => {
     Bonuses: "",
     Date: "",
   });
+  const [loadingUpdate, setLoadingUpdate] = useState(false);
+  const [updateResponse, setUpdateResponse] = useState(null);
+  const [updateError, setUpdateError] = useState(null);
   const [salaryResponse, setSalaryResponse] = useState(null);
   const [salarryError, setSalarryError] = useState(null);
   const [loadingSalarySubmit, setLoadingSalarySubmit] = useState(false);
@@ -63,6 +66,18 @@ const [evaluationEvaluatorID, setEvaluationEvaluatorID] = useState("");
   const [evaluationResponse, setEvaluationResponse] = useState(null);
   const [evaluationError, setEvaluationError] = useState(null);
   const [loadingEvaluation, setLoadingEvaluation] = useState(false);
+  const [updateEmployeeForm, setUpdateEmployeeForm] = useState({
+    employeeID: "",
+    Name: "",
+    Department: "",
+    ContactNo: "",
+    Address: "",
+    Email: "",
+    RoleID: "",
+    DateOfJoining: "",
+    SupervisorID: ""
+  });
+  
   const [loading, setLoading] = useState({
     createUser: false,
     createEmployee: false,
@@ -99,6 +114,68 @@ const [evaluationEvaluatorID, setEvaluationEvaluatorID] = useState("");
     } finally {
       setLoadingSalary(false);
     }
+  };
+  const handleUpdateEmployeeSubmit = async (e) => {
+    e.preventDefault();
+    setUpdateResponse(null);
+    setUpdateError(null);
+    setLoadingUpdate(true);
+  
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setUpdateError("Not authenticated");
+      setLoadingUpdate(false);
+      return;
+    }
+  
+    // Create an object with only the fields that have values
+    const updateData = {};
+    Object.keys(updateEmployeeForm).forEach(key => {
+      if (updateEmployeeForm[key]) {
+        updateData[key] = updateEmployeeForm[key];
+      }
+    });
+  
+    // Basic email validation
+    if (updateData.Email && !updateData.Email.includes('@')) {
+      setUpdateError("Please enter a valid email address");
+      setLoadingUpdate(false);
+      return;
+    }
+  
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await axios.post(
+        `/api/admins/update/${updateEmployeeForm.employeeID}`,
+        updateData,
+        { headers }
+      );
+      setUpdateResponse("Employee updated successfully");
+      // Clear form after successful update
+      setUpdateEmployeeForm({
+        employeeID: "",
+        Name: "",
+        Department: "",
+        ContactNo: "",
+        Address: "",
+        Email: "",
+        RoleID: "",
+        DateOfJoining: "",
+        SupervisorID: ""
+      });
+    } catch (error) {
+      setUpdateError(error.response?.data?.error || "Error updating employee");
+    } finally {
+      setLoadingUpdate(false);
+    }
+  };
+  
+  const handleUpdateInputChange = (e) => {
+    const { name, value } = e.target;
+    setUpdateEmployeeForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
   const handleSalaryInputChange = (e) => {
     const { name, value } = e.target;
@@ -1468,6 +1545,128 @@ const [evaluationEvaluatorID, setEvaluationEvaluatorID] = useState("");
   )}
   {salarryError && (
     <p style={{ color: "#ef4444", marginTop: '1rem' }}>{salarryError}</p>
+  )}
+</div>
+<div style={{ flex: '1 1 45%', minWidth: '300px', marginTop: '20px' }}>
+  <h3>Update Employee</h3>
+  <form onSubmit={handleUpdateEmployeeSubmit} style={{ width: '100%' }}>
+    <div>
+      <label>
+        Employee ID:*
+        <input
+          type="text"
+          name="employeeID"
+          value={updateEmployeeForm.employeeID}
+          onChange={handleUpdateInputChange}
+          required
+          style={{ width: '100%' }}
+        />
+      </label>
+    </div>
+    <div>
+      <label>
+        Name:
+        <input
+          type="text"
+          name="Name"
+          value={updateEmployeeForm.Name}
+          onChange={handleUpdateInputChange}
+          style={{ width: '100%' }}
+        />
+      </label>
+    </div>
+    <div>
+      <label>
+        Department:
+        <input
+          type="text"
+          name="Department"
+          value={updateEmployeeForm.Department}
+          onChange={handleUpdateInputChange}
+          style={{ width: '100%' }}
+        />
+      </label>
+    </div>
+    <div>
+      <label>
+        Contact No:
+        <input
+          type="text"
+          name="ContactNo"
+          value={updateEmployeeForm.ContactNo}
+          onChange={handleUpdateInputChange}
+          style={{ width: '100%' }}
+        />
+      </label>
+    </div>
+    <div>
+      <label>
+        Address:
+        <textarea
+          name="Address"
+          value={updateEmployeeForm.Address}
+          onChange={handleUpdateInputChange}
+          style={{ width: '100%' }}
+        />
+      </label>
+    </div>
+    <div>
+      <label>
+        Email:
+        <input
+          type="email"
+          name="Email"
+          value={updateEmployeeForm.Email}
+          onChange={handleUpdateInputChange}
+          style={{ width: '100%' }}
+        />
+      </label>
+    </div>
+    <div>
+      <label>
+        Role ID:
+        <input
+          type="number"
+          name="RoleID"
+          value={updateEmployeeForm.RoleID}
+          onChange={handleUpdateInputChange}
+          style={{ width: '100%' }}
+        />
+      </label>
+    </div>
+    <div>
+      <label>
+        Date Of Joining:
+        <input
+          type="date"
+          name="DateOfJoining"
+          value={updateEmployeeForm.DateOfJoining}
+          onChange={handleUpdateInputChange}
+          style={{ width: '100%' }}
+        />
+      </label>
+    </div>
+    <div>
+      <label>
+        Supervisor ID:
+        <input
+          type="number"
+          name="SupervisorID"
+          value={updateEmployeeForm.SupervisorID}
+          onChange={handleUpdateInputChange}
+          style={{ width: '100%' }}
+        />
+      </label>
+    </div>
+    <button type="submit" disabled={loadingUpdate} style={{ width: '100%' }}>
+      {loadingUpdate ? "Updating..." : "Update Employee"}
+    </button>
+  </form>
+  {updateResponse && (
+    <p style={{ color: "green" }}>{updateResponse}</p>
+  )}
+  {updateError && (
+    <p style={{ color: "red" }}>{updateError}</p>
   )}
 </div>
       </div>

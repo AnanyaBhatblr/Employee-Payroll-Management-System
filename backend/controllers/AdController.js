@@ -454,3 +454,84 @@ exports.getEmployeeById = async (req, res) => {
       res.status(500).json({ error: 'Failed to fetch employee' });
     }
   };
+
+exports.updateEmployee = async (req, res) => {
+    const { employeeID } = req.params;
+    const updateData = req.body;
+
+    try {
+        // Find the employee
+        const employee = await Employee.findByPk(employeeID);
+
+        if (!employee) {
+            return res.status(404).json({ error: 'Employee not found' });
+        }
+
+        // Update the employee with the new data
+        await employee.update({
+            Name: updateData.Name,
+            Department: updateData.Department,
+            ContactNo: updateData.ContactNo,
+            Address: updateData.Address,
+            Email: updateData.Email,
+            RoleID: updateData.RoleID,
+            DateOfJoining: updateData.DateOfJoining,
+            SupervisorID: updateData.SupervisorID
+        });
+
+        // Fetch the updated employee data
+        const updatedEmployee = await Employee.findByPk(employeeID);
+
+        res.status(200).json({
+            message: 'Employee updated successfully',
+            employee: updatedEmployee
+        });
+
+    } catch (error) {
+        console.error('Error updating employee:', error);
+        res.status(500).json({ 
+            error: 'Failed to update employee',
+            details: error.message 
+        });
+    }
+};
+
+
+exports.getAllEmployees = async (req, res) => {
+    try {
+      const employees = await Employee.findAll();
+      res.status(200).json(employees);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch employees' });
+    }
+  };
+  
+  // Get an employee by ID
+exports.getEmployeeById = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const employee = await Employee.findByPk(id);
+      if (!employee) {
+        return res.status(404).json({ error: 'Employee not found' });
+      }
+      res.status(200).json(employee);
+    } catch (error) {
+      console.error('Error fetching employee by ID:', error.message); 
+      res.status(500).json({ error: 'Failed to fetch employee' });
+    }
+  };
+
+  exports.getmydet = async (req, res) => {
+    try {
+      const { employeeId } = req.user;  // Directly use req.user.employeeId
+  
+      const employee = await Employee.findByPk(employeeId);  // Use employeeId here
+      if (!employee) {
+        return res.status(404).json({ error: 'Employee not found', employeeID: employeeId });
+      }
+      res.status(200).json(employee);
+    } catch (error) {
+      console.error('Error fetching employee by ID:', error.message); 
+      res.status(500).json({ error: 'Failed to fetch employee' });
+    }
+  };

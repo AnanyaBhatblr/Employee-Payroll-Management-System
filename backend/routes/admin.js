@@ -15,7 +15,7 @@ router.get('/emp/:id', AdController.getEmployeeById);//works
 router.get('/performance/:employeeID', AdController.getPerformanceStats);//works
 router.get('/evaluations/:evaluatorID',AdController.getEvaluationsByEvaluator)//works
 router.post('/evaluations/:evaluatorID', AdController.addEvaluation); //works
-
+router.post('/update/:employeeID',AdController.updateEmployee); //works
 //getall,get single, post salary records
 router.get('/payrollhis/:employeeID', AdController.getSalaryRecords);//works
 router.post('/salary', AdController.addSalary);//works
