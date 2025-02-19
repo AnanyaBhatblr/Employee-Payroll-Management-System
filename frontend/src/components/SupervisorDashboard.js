@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./AdminDashboard.css";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const SupervisorDashboard = () => {
   const navigate = useNavigate();
@@ -338,6 +340,54 @@ const SupervisorDashboard = () => {
                   <p><strong>Bonuses:</strong> ${salary.Bonuses}</p> {/* Added Bonuses field */}
                   <p><strong>Net Salary:</strong> ${calculateNetSalary(salary.BasicPay, salary.Allowances, salary.Deductions, salary.Bonuses)}</p> {/* Updated calculation */}
                 </div>
+                <button
+                  onClick={() => {
+                    const doc = new jsPDF();
+                    const totalAmount = calculateNetSalary(
+                      salary.BasicPay,
+                      salary.Allowances,
+                      salary.Deductions,
+                      salary.Bonuses
+                    );
+
+                    doc.setFontSize(20);
+                    doc.text("Salary Slip", 85, 20);
+                    doc.setFontSize(12);
+                    doc.text(`Employee Name: ${supervisorDetails.Name}`, 20, 35);
+                    doc.text(`Employee ID: ${supervisorDetails.EmployeeID}`, 20, 42);
+                    doc.text(`Department: ${supervisorDetails.Department}`, 20, 49);
+                    doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 56);
+
+                    const tableData = [
+                      ["Component", "Amount ($)"],
+                      ["Basic Pay", salary.BasicPay],
+                      ["Allowances", salary.Allowances],
+                      ["Bonuses", salary.Bonuses],
+                      ["Deductions", salary.Deductions],
+                      ["Total", totalAmount]
+                    ];
+
+                    doc.autoTable({
+                      startY: 65,
+                      head: [tableData[0]],
+                      body: tableData.slice(1),
+                      theme: 'grid'
+                    });
+
+                    doc.save(`salary-slip-${supervisorDetails.Name.replace(/ /g, "-")}.pdf`);
+                  }}
+                  style={{
+                    backgroundColor: '#3b82f6',
+                    color: '#fff',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '0.25rem',
+                    border: 'none',
+                    cursor: 'pointer',
+                    marginTop: '1rem'
+                  }}
+                >
+                  Download Salary Slip
+                </button>
               </div>
             )}
           </div>

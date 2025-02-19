@@ -2,8 +2,19 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; // Add this import
 import "./AdminDashboard.css";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const AdminDashboard = () => {
+  const calculateNetSalary = (basicPay, allowances, deductions, bonuses) => {
+    // Convert all values to numbers and handle undefined values
+    const basic = Number(basicPay) || 0;
+    const allow = Number(allowances) || 0;
+    const deduc = Number(deductions) || 0;
+    const bonus = Number(bonuses) || 0;
+
+    return basic + allow + bonus - deduc;
+  };
   const navigate = useNavigate(); // Add this line
   const handleLogout = () => {
     localStorage.removeItem("token"); // Remove the token from local storage
@@ -856,11 +867,11 @@ const [loadingEvaluation, setLoadingEvaluation] = useState(false);
                       <h4>Salary Record {index + 1}</h4>
                       <div className="personal-details-grid">
                         <p><strong>Date:</strong> {new Date(record.Date).toLocaleDateString()}</p>
-                        <p><strong>Basic Pay:</strong> ₹{record.BasicPay}</p>
-                        <p><strong>Allowances:</strong> ₹{record.Allowances}</p>
-                        <p><strong>Deductions:</strong> ₹{record.Deductions}</p>
-                        <p><strong>Bonuses:</strong> ₹{record.Bonuses}</p>
-                        <p><strong>Total:</strong> ₹{(
+                        <p><strong>Basic Pay:</strong> ${record.BasicPay}</p>
+                        <p><strong>Allowances:</strong> ${record.Allowances}</p>
+                        <p><strong>Deductions:</strong> ${record.Deductions}</p>
+                        <p><strong>Bonuses:</strong> ${record.Bonuses}</p>
+                        <p><strong>Total:</strong> ${(
                           parseFloat(record.BasicPay) +
                           parseFloat(record.Allowances) +
                           parseFloat(record.Bonuses) -
@@ -914,11 +925,11 @@ const [loadingEvaluation, setLoadingEvaluation] = useState(false);
                       <div key={record.SalaryID} className="personal-details-grid">
                         <p><strong>Record {index + 1}</strong></p>
                         <p><strong>Date:</strong> {new Date(record.Date).toLocaleDateString()}</p>
-                        <p><strong>Basic Pay:</strong> ₹{record.BasicPay}</p>
-                        <p><strong>Allowances:</strong> ₹{record.Allowances}</p>
-                        <p><strong>Deductions:</strong> ₹{record.Deductions}</p>
-                        <p><strong>Bonuses:</strong> ₹{record.Bonuses}</p>
-                        <p><strong>Total:</strong> ₹{(
+                        <p><strong>Basic Pay:</strong> ${record.BasicPay}</p>
+                        <p><strong>Allowances:</strong> ${record.Allowances}</p>
+                        <p><strong>Deductions:</strong> ${record.Deductions}</p>
+                        <p><strong>Bonuses:</strong> ${record.Bonuses}</p>
+                        <p><strong>Total:</strong> ${(
                           parseFloat(record.BasicPay) +
                           parseFloat(record.Allowances) +
                           parseFloat(record.Bonuses) -
@@ -955,16 +966,67 @@ const [loadingEvaluation, setLoadingEvaluation] = useState(false);
                 <div className="data-display">
                   <div className="detail-item">
                     <div className="personal-details-grid">
-                      <p><strong>Basic Pay:</strong> ₹{salary.BasicPay}</p>
-                      <p><strong>Allowances:</strong> ₹{salary.Allowances}</p>
-                      <p><strong>Deductions:</strong> ₹{salary.Deductions}</p>
-                      <p><strong>Bonuses:</strong> ₹{salary.Bonuses}</p>
-                      <p><strong>Total:</strong> ₹{(
+                      <p><strong>Basic Pay:</strong> ${salary.BasicPay}</p>
+                      <p><strong>Allowances:</strong> ${salary.Allowances}</p>
+                      <p><strong>Deductions:</strong> ${salary.Deductions}</p>
+                      <p><strong>Bonuses:</strong> ${salary.Bonuses}</p>
+                      <p><strong>Total:</strong> ${(
                         parseFloat(salary.BasicPay) +
                         parseFloat(salary.Allowances) +
                         parseFloat(salary.Bonuses) -
                         parseFloat(salary.Deductions)
                       ).toFixed(2)}</p>
+                      <div>
+                        <p><strong>Net Salary:</strong> ${calculateNetSalary(salary.BasicPay, salary.Allowances, salary.Deductions, salary.Bonuses)}</p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const doc = new jsPDF();
+                          const totalAmount = calculateNetSalary(
+                            salary.BasicPay,
+                            salary.Allowances,
+                            salary.Deductions,
+                            salary.Bonuses
+                          );
+                      
+                          doc.setFontSize(20);
+                          doc.text("Salary Slip", 85, 20);
+                          doc.setFontSize(12);
+                          doc.text(`Employee Name: ${adminDetails.Name}`, 20, 35);
+                          doc.text(`Employee ID: ${adminDetails.EmployeeID}`, 20, 42);
+                          doc.text(`Department: ${adminDetails.Department}`, 20, 49);
+                          doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 56);
+                      
+                          const tableData = [
+                            ["Component", "Amount ($)"],
+                            ["Basic Pay", salary.BasicPay],
+                            ["Allowances", salary.Allowances],
+                            ["Bonuses", salary.Bonuses],
+                            ["Deductions", salary.Deductions],
+                            ["Total", totalAmount]
+                          ];
+                      
+                          doc.autoTable({
+                            startY: 65,
+                            head: [tableData[0]],
+                            body: tableData.slice(1),
+                            theme: 'grid'
+                          });
+                      
+                          doc.save(`salary-slip-${adminDetails.Name.replace(/ /g, "-")}.pdf`);
+                        }}
+                        style={{
+                          backgroundColor: '#3b82f6',
+                          color: '#fff',
+                          padding: '0.5rem 1rem',
+                          borderRadius: '0.25rem',
+                          border: 'none',
+                          cursor: 'pointer',
+                          marginTop: '1rem'
+                        }}
+                      >
+                        Download Salary Slip
+                      </button>
                     </div>
                   </div>
                 </div>

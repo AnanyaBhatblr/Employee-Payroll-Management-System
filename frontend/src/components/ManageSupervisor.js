@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./AdminDashboard.css";
+import { useNavigate } from "react-router-dom";
 
 const ManageSupervisor = () => {
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate('/supervisors');
+  };
+
   const [subordinates, setSubordinates] = useState([]); // Initialize as an empty array
   const [loading, setLoading] = useState(false);
   const [fetched, setFetched] = useState(false);
@@ -164,6 +171,24 @@ const ManageSupervisor = () => {
   return (
     <div className="admin-dashboard">
       <div className="dashboard-container">
+        <button
+          onClick={handleBack}
+          style={{
+            position: 'absolute',
+            top: '20px',
+            left: '20px',
+            padding: '10px 20px',
+            backgroundColor: '#1e40af',
+            color: 'white',
+            border: 'none',
+            borderRadius: '0.5rem',
+            cursor: 'pointer',
+            fontSize: '1rem',
+            width: 'auto'
+          }}
+        >
+          Back
+        </button>
         <div className="dashboard-header">
           <h1 className="dashboard-title">Manage My Team</h1>
           <p className="dashboard-subtitle">Manage your team and evaluations</p>
