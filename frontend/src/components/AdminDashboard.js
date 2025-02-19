@@ -20,7 +20,21 @@ const AdminDashboard = () => {
     localStorage.removeItem("token"); // Remove the token from local storage
     navigate("/"); // Redirect to the login page
   };
-
+  const [updateEmployeeForm, setUpdateEmployeeForm] = useState({
+    employeeID: "",
+    Name: "",
+    Department: "",
+    ContactNo: "",
+    Address: "",
+    Email: "",
+    RoleID: "",
+    DateOfJoining: "",
+    SupervisorID: ""
+  });
+  const [updateResponse, setUpdateResponse] = useState(null);
+  const [updateError, setUpdateError] = useState(null);
+  const [loadingUpdate, setLoadingUpdate] = useState(false);
+  
   const [showManageEmployees, setShowManageEmployees] = useState(false);
   const [adminDetails, setAdminDetails] = useState(null);
   const [performance, setPerformance] = useState(null);
@@ -139,7 +153,51 @@ const [loadingEvaluation, setLoadingEvaluation] = useState(false);
     // Fetch performance data
     fetchData("performance", "/api/admins/myperformance", setPerformance);
   }, []);
-
+  const handleUpdateEmployeeSubmit = async (e) => {
+    e.preventDefault();
+    setUpdateResponse(null);
+    setUpdateError(null);
+    setLoadingUpdate(true);
+  
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setUpdateError("Not authenticated");
+      setLoadingUpdate(false);
+      return;
+    }
+  
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await axios.post(
+        `/api/admins/update/${updateEmployeeForm.employeeID}`,
+        updateEmployeeForm,
+        { headers }
+      );
+      setUpdateResponse("Employee updated successfully");
+      setUpdateEmployeeForm({
+        employeeID: "",
+        Name: "",
+        Department: "",
+        ContactNo: "",
+        Address: "",
+        Email: "",
+        RoleID: "",
+        DateOfJoining: "",
+        SupervisorID: ""
+      });
+    } catch (error) {
+      setUpdateError(error.response?.data?.error || "Error updating employee");
+    } finally {
+      setLoadingUpdate(false);
+    }
+  };
+  const handleUpdateInputChange = (e) => {
+    const { name, value } = e.target;
+    setUpdateEmployeeForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
   // Generic function to fetch data from a given endpoint
   const fetchData = async (type, url, setState) => {
     const token = localStorage.getItem("token");
@@ -1032,8 +1090,8 @@ const [loadingEvaluation, setLoadingEvaluation] = useState(false);
                 </div>
               )}
             </div>
+            
           </div>
-
           {/* Remove the All Employees Section entirely */}
           
         </div>
