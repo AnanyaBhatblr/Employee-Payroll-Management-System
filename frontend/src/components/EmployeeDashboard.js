@@ -71,7 +71,7 @@ const EmployeeDashboard = () => {
           <h1 className="dashboard-title">Employee Dashboard</h1>
           <p className="dashboard-subtitle">View your personal information</p>
           <button
-            onClick={() => window.location.href = "https://indian-tax-regime-calc.streamlit.app/"}
+            onClick={() => window.location.href = "https://tax-regime-calc.streamlit.app/"}
             style={{
               backgroundColor: '#4caf50',
               color: '#fff',

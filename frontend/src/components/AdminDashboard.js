@@ -535,7 +535,7 @@ const [loadingEvaluation, setLoadingEvaluation] = useState(false);
           <p className="dashboard-subtitle">Manage your organization's data</p>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '1rem' }}>
             <button
-              onClick={() => window.location.href = "https://indian-tax-regime-calc.streamlit.app/"}
+              onClick={() => window.location.href = "https://tax-regime-calc.streamlit.app/"}
               style={{
                 backgroundColor: '#4caf50',
                 color: '#fff',
